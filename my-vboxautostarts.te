@@ -1,0 +1,15 @@
+module my-vboxautostarts 1.0;
+
+require {
+type unconfined_t;
+type init_t;
+type sudo_exec_t;
+class unix_stream_socket connectto;
+class process setpgid;
+class file { execute execute_no_trans getattr open read };
+}
+
+#============= init_t ==============
+allow init_t self:process setpgid;
+allow init_t sudo_exec_t:file { execute execute_no_trans getattr open read };
+allow init_t unconfined_t:unix_stream_socket connectto;
