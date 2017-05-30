@@ -25,7 +25,7 @@
 # Description:    VirtualBox autostart service
 ### END INIT INFO
 
-PATH=$PATH:/bin:/sbin:/usr/sbin
+PATH=$PATH:/bin:/sbin:/usr/sbin:/usr/bin
 SCRIPTNAME=vboxautostart-service.sh
 
 [ -f /etc/debian_release -a -f /lib/lsb/init-functions ] || NOLSB=yes
@@ -66,9 +66,15 @@ fail_msg()
 }
 
 start_daemon() {
+    max_cnt="5"
     usr="$1"
     shift
-    su - $usr -c "$*"
+    sudo -u $usr $*
+    while [ "$?" == "1" ] && [ "${max_cnt}" != "0"  ]; do
+        sudo -u $usr $*
+        sleep 1
+        max_cnt=`expr ${max_cnt} - 1`
+    done
 }
 
 if which start-stop-daemon >/dev/null 2>&1; then
